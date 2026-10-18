@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JavaNest · Customer Visits</title>
+<meta name="description" content="JavaNest Customer Visit Tracking System: interactive prototype of the counter look-up, registration, visit capture, customer records and management dashboard.">
+<meta property="og:title" content="JavaNest · Customer Visits">
+<meta property="og:description" content="Interactive prototype of the JavaNest Customer Visit Tracking System.">
+<meta name="theme-color" content="#3E2A1E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%233E2A1E'/%3E%3Crect x='18' y='24' width='22' height='18' rx='5' fill='%23F7F2EC'/%3E%3Cpath d='M40 28a6 6 0 0 1 0 10' stroke='%23F7F2EC' stroke-width='4' fill='none'/%3E%3Cellipse cx='30' cy='45' rx='16' ry='2.5' fill='%23C8925A'/%3E%3C/svg%3E">
+<style>
+:root{
+  --brand:#3E2A1E; --brand-2:#6B4A35; --cream:#F7F2EC; --accent:#1F7A5A; --accent-soft:#E3F2EA;
+  --bg:#F4F1EC; --card:#FFFFFF; --line:#E3DDD5; --text:#1E1B18; --muted:#6E665E; --warn:#B26B00; --warn-soft:#FFF4DE; --danger:#B3261E;
+  --s1:#2a78d6; --seq1:#E6F0FB; --seq2:#BBD5F3; --seq3:#86B3EA; --seq4:#4B8EDF; --seq5:#1F5FAE;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+.top{display:flex;align-items:center;gap:20px;background:var(--brand);color:#fff;padding:0 22px;height:56px}
+.logo{font-weight:800;font-size:19px;letter-spacing:.3px}.logo span{color:#E8C9A6;font-weight:600}
+.nav{display:flex;gap:4px;flex-wrap:wrap}
+.nav a{color:#EADFD3;text-decoration:none;padding:8px 12px;border-radius:8px;font-size:13px}
+.nav a.on,.nav a:hover{background:rgba(255,255,255,.14);color:#fff}
+.who{margin-left:auto;font-size:12px;color:#E8DCCF;text-align:right;line-height:1.3}
+.screen{display:none;padding:22px}
+.screen.on{display:block}
+h1{font-size:20px;margin:0 0 4px} .sub{color:var(--muted);margin:0 0 16px;font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+.grid{display:grid;gap:16px}
+label{display:block;font-weight:600;font-size:12.5px;margin:12px 0 5px}
+input,select{width:100%;padding:10px 12px;border:1px solid #CFC7BD;border-radius:8px;font-size:14px;background:#fff;font-family:inherit}
+.row{display:flex;gap:12px}.row>*{flex:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 18px;border-radius:9px;border:1px solid #CFC7BD;background:#fff;font-weight:650;font-size:14px;cursor:pointer;font-family:inherit;color:var(--text)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.dark{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.big{padding:16px 18px;font-size:15px;border-radius:11px}
+.chip{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11.5px;font-weight:700;background:var(--accent-soft);color:var(--accent)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)} .chip.grey{background:#EEE9E3;color:#5F574F}
+.tag{font-size:11px;color:var(--muted)}
+.req{position:absolute;top:-10px;right:12px;background:#1F3864;color:#fff;font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:6px}
+.rel{position:relative}
+.check{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:9px;margin-top:8px;font-size:13px;background:#FCFAF7}
+.check input{width:18px;height:18px;margin-top:1px;flex:none}
+.note{background:var(--warn-soft);border:1px solid #F1D9A8;color:#6B4800;padding:10px 12px;border-radius:9px;font-size:12.5px;margin-top:12px}
+.ok{background:var(--accent-soft);border:1px solid #BFE0CE;color:#17573F;padding:10px 12px;border-radius:9px;font-size:12.5px;margin-top:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11.5px;color:var(--muted);font-weight:700;padding:8px;border-bottom:1px solid var(--line);text-transform:uppercase;letter-spacing:.3px}
+td{padding:9px 8px;border-bottom:1px solid #EFEAE4}
+tr.sel td{background:#F3EEE7}
+.kpi{padding:14px 16px}.kpi .v{font-size:26px;font-weight:750;margin-top:4px}.kpi .l{font-size:12px;color:var(--muted);font-weight:600}
+.kpi .d{font-size:11.5px;color:var(--muted);margin-top:3px}
+.filters{display:flex;gap:10px;align-items:center;margin-bottom:14px}
+.filters select{width:auto;padding:8px 10px;font-size:13px}
+.ct{font-weight:700;font-size:14px;margin:0 0 2px}.cs{font-size:12px;color:var(--muted);margin:0 0 10px}
+svg text{font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.pos-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px dashed #E5DED6}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.keypad div{background:#F4EFE9;border-radius:9px;text-align:center;padding:12px 0;font-weight:700;font-size:16px}
+.avatar{width:54px;height:54px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800}
+.phone{width:390px;min-height:780px;background:#fff;border-radius:34px;border:10px solid #222;margin:0 auto;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.15)}
+.phone .hd{background:var(--brand);color:#fff;padding:18px 18px 16px}
+.lang{display:flex;gap:6px;margin-top:10px}.lang span{border:1px solid rgba(255,255,255,.4);padding:3px 9px;border-radius:6px;font-size:12px}.lang span.on{background:#fff;color:var(--brand);font-weight:700}
+.watermark{font-size:11px;color:var(--muted);text-align:right;margin-top:10px}
+.top{flex-wrap:wrap;height:auto;min-height:56px;padding-block:8px}
+.tblwrap{overflow-x:auto}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;padding:14px 22px 22px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);margin-top:8px}
+a:focus-visible,.btn:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:900px){
+  .grid{grid-template-columns:1fr !important}
+  .grid.kpis{grid-template-columns:repeat(2,1fr) !important}
+  .row{flex-wrap:wrap}.row>*{min-width:140px}
+  .filters{flex-wrap:wrap}.filters input{width:100% !important}
+  .who{margin-left:0;text-align:left}
+  .screen{padding:16px}
+  .phone{width:100%;max-width:390px;min-height:0}
+  .grid>*{min-width:0}
+  #s6 > div:first-child{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="logo">JavaNest <span>Customer Visits</span></div>
+  <nav class="nav">
+    <a href="#s1">Counter</a><a href="#s2">Register</a><a href="#s3">Self sign-up</a><a href="#s4">Visit capture</a><a href="#s5">Customers</a><a href="#s6">Dashboard</a>
+  </nav>
+  <div class="who" id="who">Kallio store · Till 2<br>Signed in: Emma (Barista)</div>
+</div>
+
+<!-- S1 COUNTER -->
+<section class="screen" id="s1">
+  <h1>Counter: identify customer</h1><p class="sub">Shown next to the POS order. Barista asks “Are you a JavaNest member?”</p>
+  <div class="grid" style="grid-template-columns:1fr 1.25fr">
+    <div class="card">
+      <div class="ct">Current order · Ticket #2184</div><p class="cs">From the POS (unchanged)</p>
+      <div class="pos-item"><span>Oat flat white (L)</span><b>€5.20</b></div>
+      <div class="pos-item"><span>Korvapuusti (cinnamon bun)</span><b>€3.90</b></div>
+      <div class="pos-item"><span>Order type</span><b>Takeaway</b></div>
+      <div class="pos-item" style="border:none;font-size:17px"><span><b>Total</b></span><b>€9.10</b></div>
+      <div class="rel" style="margin-top:14px">
+        <label>Find member</label>
+        <div class="row"><input value="+358 40 123 4567"><button class="btn dark" style="flex:none">Search</button></div>
+        <div class="row" style="margin-top:10px"><button class="btn big">▣ Scan QR code</button><button class="btn big">＋ New customer</button></div>
+      </div>
+    </div>
+    <div class="card rel">
+      <div style="display:flex;gap:14px;align-items:center">
+        <div class="avatar">A</div>
+        <div><div style="font-size:22px;font-weight:800">Aino</div><div class="tag">Member since Mar 2026 · Customer ID JN-004812</div></div>
+        <span class="chip" style="margin-left:auto">Regular</span>
+      </div>
+      <div class="grid" style="grid-template-columns:repeat(3,1fr);margin-top:16px;gap:10px">
+        <div class="card kpi" style="background:#FCFAF7"><div class="l">Visits</div><div class="v">14</div><div class="d">all stores</div></div>
+        <div class="card kpi" style="background:#FCFAF7"><div class="l">Last visit</div><div class="v" style="font-size:20px">2 days ago</div><div class="d">Kallio</div></div>
+        <div class="card kpi" style="background:#FCFAF7"><div class="l">Stamp card</div><div class="v">4 / 10</div><div class="d">digital</div></div>
+      </div>
+      <label>Usual order</label>
+      <div style="padding:10px 12px;background:#F4EFE9;border-radius:9px;font-weight:600">Oat flat white (L) · Korvapuusti</div>
+      <div class="ok">✓ Say hello to Aino by name. Contact details are not shown at the counter.</div>
+      <div class="row rel" style="margin-top:16px">
+        <button class="btn primary big">Link to this sale</button><button class="btn big">Skip (no member)</button>
+      </div>
+      <div class="watermark">Average look-up time: under 10 seconds</div>
+    </div>
+  </div>
+</section>
+
+<!-- S2 REGISTRATION -->
+<section class="screen" id="s2">
+  <h1>Customer Registration Form (staff-assisted)</h1><p class="sub">Minimum data only. Takes under 30 seconds at the counter.</p>
+  <div class="grid" style="grid-template-columns:1.3fr 1fr">
+    <div class="card rel">
+      <div class="row"><div><label>First name *</label><input value="Mikko"></div><div><label>Mobile number *</label><input value="+358 50 765 4321"></div></div>
+      <div class="ok">✓ Mobile number checked: no existing member found.</div>
+      <div class="rel" style="margin-top:18px">
+        <label>Consent</label>
+        <div class="check"><input type="checkbox" checked><div><b>Privacy notice read to customer and accepted *</b><br><span class="tag">“We save your first name, number and visits to recognise you and improve our service. You can ask us to delete them at any time.” (notice v1.0)</span></div></div>
+        <div class="check"><input type="checkbox"><div><b>Send me offers and news (optional)</b><br><span class="tag">Off unless the customer says yes. Can be changed any time.</span></div></div>
+      </div>
+      <div class="row" style="margin-top:12px"><div><label>Paper stamp card balance (optional)</label><input value="6"></div><div><label>Home store</label><select><option>Kallio (this store)</option></select></div></div>
+      <div class="row" style="margin-top:18px"><button class="btn">Cancel</button><button class="btn primary">Register and link to sale</button></div>
+    </div>
+    <div class="card rel">
+      <div class="ct">After saving</div><p class="cs">What the customer receives</p>
+      <div style="display:flex;gap:14px;align-items:center;padding:14px;border:1px dashed #CFC7BD;border-radius:12px">
+        <svg width="92" height="92" viewBox="0 0 21 21" role="img" aria-label="Sample QR code"><rect width="21" height="21" fill="#fff"/>
+          <g fill="#1E1B18"><rect x="0" y="0" width="7" height="7"/><rect x="14" y="0" width="7" height="7"/><rect x="0" y="14" width="7" height="7"/></g>
+          <g fill="#fff"><rect x="1" y="1" width="5" height="5"/><rect x="15" y="1" width="5" height="5"/><rect x="1" y="15" width="5" height="5"/></g>
+          <g fill="#1E1B18"><rect x="2" y="2" width="3" height="3"/><rect x="16" y="2" width="3" height="3"/><rect x="2" y="16" width="3" height="3"/>
+          <rect x="9" y="1" width="2" height="2"/><rect x="8" y="5" width="3" height="1"/><rect x="9" y="9" width="3" height="3"/><rect x="13" y="9" width="2" height="2"/><rect x="16" y="12" width="3" height="2"/><rect x="9" y="15" width="2" height="4"/><rect x="13" y="16" width="5" height="2"/><rect x="4" y="9" width="3" height="2"/><rect x="18" y="17" width="2" height="3"/></g></svg>
+        <div><b>SMS to +358 50 ••• 4321</b><br><span class="tag">“Welcome to JavaNest, Mikko! Show this code next time: jvn.st/m/JN-005127”</span><br><span class="chip" style="margin-top:6px">Add to Apple / Google Wallet</span></div>
+      </div>
+      <div class="note">Opening stamp balance of 6 is saved once. Please take the paper card back.</div>
+      <div class="ct" style="margin-top:18px">Duplicate example</div>
+      <div class="note" style="background:#FDECEA;border-color:#F3C1BC;color:#7A1B14">This mobile number already belongs to member <b>Aino (JN-004812)</b>. Open existing record instead?</div>
+    </div>
+  </div>
+</section>
+
+<!-- S3 SELF REGISTRATION -->
+<section class="screen" id="s3">
+  <div class="grid" style="grid-template-columns:1fr 390px 1fr;align-items:start">
+    <div><h1>Self-registration (customer's phone)</h1><p class="sub">Opened by scanning the QR code on posters, table cards or receipts. Moves the longer form away from the queue.</p>
+      <div class="card" style="font-size:13px;line-height:1.6"><b>How it works</b><br>Customers scan the QR code on posters, table cards or receipts, choose Finnish, Swedish or English, and join in under a minute. Their digital member card arrives by SMS.</div></div>
+    <div class="phone">
+      <div class="hd"><div class="logo">JavaNest</div><div style="font-size:18px;font-weight:700;margin-top:10px">Join JavaNest</div><div style="font-size:13px;opacity:.85">Get recognised in every store and collect your digital stamps.</div>
+        <div class="lang"><span>Suomi</span><span>Svenska</span><span class="on">English</span></div></div>
+      <div style="padding:16px 18px">
+        <label>First name *</label><input value="Sofia">
+        <label>Mobile number *</label><input value="+358 44 222 1188">
+        <label>Email (optional)</label><input placeholder="name@example.com">
+        <div class="row"><div><label>Birth month (optional)</label><select><option>June</option></select></div><div><label>Home store</label><select><option>Kamppi</option></select></div></div>
+        <label>I am mainly a… (optional)</label><select><option>Student</option></select>
+        <div class="check"><input type="checkbox" checked><div>I accept the <u>privacy notice</u> *</div></div>
+        <div class="check"><input type="checkbox"><div>Send me offers by SMS or email (optional)</div></div>
+        <button class="btn primary big" style="width:100%;margin-top:14px">Join</button>
+        <div class="tag" style="text-align:center;margin-top:8px">Must be 13 or older. You can delete your data any time.</div>
+      </div>
+    </div>
+    <div></div>
+  </div>
+</section>
+
+<!-- S4 VISIT CAPTURE -->
+<section class="screen" id="s4">
+  <h1>Customer Visit Capture Form (manual fallback)</h1><p class="sub">Used only when the POS link is unavailable (offline or pilot store). Normally visits are created automatically.</p>
+  <div class="grid" style="grid-template-columns:1.4fr 1fr">
+    <div class="card rel">
+      <div class="row"><div><label>Customer *</label><input value="Aino · +358 40 ••• 4567 · JN-004812"></div><div><label>Store *</label><select><option>Kallio</option></select></div></div>
+      <div class="row"><div><label>Date *</label><input value="15.10.2026"></div><div><label>Time *</label><input value="08:42"></div><div><label>Order type *</label><select><option>Takeaway</option></select></div></div>
+      <label>Items purchased *</label>
+      <table><thead><tr><th>Product</th><th>Category</th><th style="text-align:right">Qty</th><th style="text-align:right">Price</th></tr></thead>
+      <tbody><tr><td>Oat flat white (L)</td><td>Coffee</td><td style="text-align:right">1</td><td style="text-align:right">€5.20</td></tr>
+      <tr><td>Korvapuusti</td><td>Bakery</td><td style="text-align:right">1</td><td style="text-align:right">€3.90</td></tr>
+      <tr><td colspan="3" style="color:var(--accent);font-weight:700">＋ Add item</td><td style="text-align:right;font-weight:800">€9.10</td></tr></tbody></table>
+      <div class="row"><div><label>POS receipt number (if known)</label><input value="2184"></div><div><label>Reason for manual entry *</label><select><option>POS link offline</option></select></div></div>
+      <div class="row" style="margin-top:18px"><button class="btn">Cancel</button><button class="btn primary">Save visit</button></div>
+    </div>
+    <div class="grid">
+      <div class="card rel"><div class="ct">Visit rule check</div>
+        <div class="note">Aino already has a visit at Kallio at 08:31 (11 minutes ago). These items will be <b>added to that visit</b> instead of counting a new one.</div></div>
+      <div class="card"><div class="ct">Captured by</div><p class="cs">Recorded automatically</p>
+        <table><tr><td>Staff</td><td><b>Emma (Barista)</b></td></tr><tr><td>Store</td><td><b>Kallio</b></td></tr><tr><td>Method</td><td><span class="chip warn">Manual</span></td></tr></table></div>
+    </div>
+  </div>
+</section>
+
+<!-- S5 CUSTOMERS -->
+<section class="screen" id="s5">
+  <h1>Customer records</h1><p class="sub">Back office · Marketing view</p>
+  <div class="filters"><input style="width:260px" placeholder="Search name, mobile or ID"><select><option>All stores</option></select><select><option>All segments</option></select><select><option>Last visit: any time</option></select></div>
+  <div class="grid" style="grid-template-columns:1.35fr 1fr">
+    <div class="card tblwrap" style="padding:8px 12px"><table id="custTable"><thead><tr><th>Customer</th><th>Home store</th><th>Segment</th><th style="text-align:right">Visits (30 d)</th><th>Last visit</th><th style="text-align:right">Avg spend</th></tr></thead><tbody></tbody></table></div>
+    <div class="card rel">
+      <div style="display:flex;gap:12px;align-items:center"><div class="avatar" style="width:44px;height:44px;font-size:18px">A</div><div><b style="font-size:17px">Aino Virtanen</b><div class="tag">JN-004812 · Kallio · member since 12.03.2026</div></div><span class="chip" style="margin-left:auto">Regular</span></div>
+      <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px">
+        <div class="card kpi"><div class="l">Total visits</div><div class="v" style="font-size:22px">14</div></div>
+        <div class="card kpi"><div class="l">Avg spend</div><div class="v" style="font-size:22px">€8.60</div></div>
+        <div class="card kpi"><div class="l">Favourite</div><div class="v" style="font-size:14px;margin-top:8px">Oat flat white</div></div>
+      </div>
+      <div class="ct" style="margin-top:14px">Visit history</div>
+      <table><thead><tr><th>Date</th><th>Store</th><th>Items</th><th style="text-align:right">Value</th></tr></thead><tbody>
+        <tr><td>13.10 08:31</td><td>Kallio</td><td>Oat flat white, Korvapuusti</td><td style="text-align:right">€9.10</td></tr>
+        <tr><td>10.10 12:05</td><td>Kamppi</td><td>Salmon sandwich, Latte</td><td style="text-align:right">€13.40</td></tr>
+        <tr><td>08.10 08:27</td><td>Kallio</td><td>Oat flat white</td><td style="text-align:right">€5.20</td></tr></tbody></table>
+      <div style="margin-top:12px;font-size:12.5px">Consent: <span class="chip">Service ✓ 12.03.2026</span> <span class="chip grey">Marketing ✗</span></div>
+      <div class="row" style="margin-top:14px"><button class="btn">Export data</button><button class="btn">Correct details</button><button class="btn" style="color:var(--danger)">Erase / anonymise</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- S6 DASHBOARD -->
+<section class="screen" id="s6">
+  <div style="display:flex;align-items:flex-end;gap:16px"><div><h1>Customer visits dashboard</h1><p class="sub">Head office view · last 8 weeks</p></div>
+    <div class="filters" style="margin-left:auto"><select><option>Last 8 weeks</option></select><select><option>All stores</option></select><select><option>All segments</option></select><button class="btn" style="padding:8px 12px;font-size:13px">Export ⤓</button></div></div>
+  <div class="grid rel kpis" style="grid-template-columns:repeat(6,1fr);gap:12px">
+    <div class="card kpi"><div class="l">Identified transactions</div><div class="v">31%</div><div class="d">target 40% by month 6</div></div>
+    <div class="card kpi"><div class="l">Active customers</div><div class="v">3,482</div><div class="d">≥1 visit in 90 days</div></div>
+    <div class="card kpi"><div class="l">New registrations</div><div class="v">412</div><div class="d">last 8 weeks</div></div>
+    <div class="card kpi"><div class="l">Repeat-visit rate</div><div class="v">58%</div><div class="d">2+ visits in period</div></div>
+    <div class="card kpi"><div class="l">Visits per customer</div><div class="v">2.8</div><div class="d">per month</div></div>
+    <div class="card kpi"><div class="l">Spend per visit</div><div class="v">€7.40</div><div class="d">identified visits</div></div>
+  </div>
+  <div class="grid" style="grid-template-columns:1.25fr 1fr;margin-top:14px">
+    <div class="card"><div class="ct">Identified visits per week</div><p class="cs">All stores · last 8 weeks</p><div id="line"></div></div>
+    <div class="card rel"><div class="ct">Peak periods</div><p class="cs">Average visits by hour and weekday · all stores</p><div id="heat"></div></div>
+  </div>
+  <div class="grid" style="grid-template-columns:1fr 1fr 1fr;margin-top:14px">
+    <div class="card rel"><div class="ct">Top products</div><p class="cs">Items bought on identified visits</p><div id="prod"></div></div>
+    <div class="card rel"><div class="ct">Customer segments</div><p class="cs">Registered customers by segment</p><div id="seg"></div></div>
+    <div class="card rel"><div class="ct">Monthly retention</div><p class="cs">% of each sign-up month still visiting</p><div id="coh"></div></div>
+  </div>
+</section>
+
+<footer class="foot"><span>© 2026 JavaNest · Customer Visit Tracking System · Prototype v1.0</span><span>Demonstration data only · Designed by White Obiebi, Business Analyst</span></footer>
+<script>
+const $ = (s) => document.querySelector(s);
+function show(){ const id=(location.hash||'#s1').slice(1);
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));
+  document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+id));
+  $('#who').innerHTML = (id==='s5'||id==='s6') ? 'Head office<br>Signed in: Laura (Marketing Manager)' : 'Kallio store · Till 2<br>Signed in: Emma (Barista)'; }
+window.addEventListener('hashchange',show); show();
+
+// customer table
+const custs=[['Aino Virtanen','Kallio','Regular',9,'13.10','€8.60',1],['Mikko Korhonen','Kallio','New',1,'15.10','€9.10'],['Sofia Nieminen','Kamppi','Occasional',2,'11.10','€6.80'],
+ ['Jari Mäkinen','Tampere','At risk',0,'02.09','€7.90'],['Elina Laine','Kamppi','Regular',6,'14.10','€11.20'],['Oskari Heikkinen','Turku','Lapsed',0,'21.07','€5.40'],['Hanna Koskinen','Kallio','Regular',5,'14.10','€6.10']];
+const segChip={Regular:'',New:'',Occasional:' grey','At risk':' warn',Lapsed:' grey'};
+$('#custTable tbody').innerHTML=custs.map(c=>`<tr class="${c[6]?'sel':''}"><td><b>${c[0]}</b></td><td>${c[1]}</td><td><span class="chip${segChip[c[2]]}">${c[2]}</span></td><td style="text-align:right">${c[3]}</td><td>${c[4]}</td><td style="text-align:right">${c[5]}</td></tr>`).join('');
+
+const NS='http://www.w3.org/2000/svg';
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+const tip=(e,s)=>{el('title',{},e).textContent=s};
+
+// line chart (single series)
+(function(){const W=520,H=210,m={l:40,r:40,t:14,b:28};const s=el('svg',{width:'100%',viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'Identified visits per week'},$('#line'));
+ const v=[820,905,980,1040,1160,1235,1310,1410], wk=['W35','W36','W37','W38','W39','W40','W41','W42'];
+ const x=i=>m.l+i*(W-m.l-m.r)/(v.length-1), y=d=>H-m.b-(d/1600)*(H-m.t-m.b);
+ [0,400,800,1200,1600].forEach(g=>{el('line',{x1:m.l,x2:W-m.r,y1:y(g),y2:y(g),stroke:'#EEE9E3'},s);el('text',{x:m.l-6,y:y(g)+4,'text-anchor':'end','font-size':10,fill:'#6E665E'},s).textContent=g.toLocaleString('en')});
+ wk.forEach((w,i)=>el('text',{x:x(i),y:H-8,'text-anchor':'middle','font-size':10,fill:'#6E665E'},s).textContent=w);
+ el('path',{d:v.map((d,i)=>(i?'L':'M')+x(i)+' '+y(d)).join(' '),fill:'none',stroke:'var(--s1)','stroke-width':2},s);
+ v.forEach((d,i)=>{const c=el('circle',{cx:x(i),cy:y(d),r:i===v.length-1?4.5:3,fill:'var(--s1)',stroke:'#fff','stroke-width':2},s);tip(c,`${wk[i]}: ${d.toLocaleString('en')} visits`)});
+ el('text',{x:x(7)+8,y:y(1410)+4,'font-size':11,'font-weight':700,fill:'#1E1B18'},s).textContent='1,410';
+})();
+
+// heatmap (sequential, one hue)
+(function(){const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],hrs=[7,8,9,10,11,12,13,14,15,16,17,18];
+ const base=[3,5,3,2,2,4,4,2,2,2,2,1];const W=430,H=210,cl=34,ct=6,cw=(W-cl-4)/hrs.length,ch=(H-ct-22)/days.length;
+ const s=el('svg',{width:'100%',viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'Peak periods heat map'},$('#heat'));
+ const cols=['var(--seq1)','var(--seq2)','var(--seq3)','var(--seq4)','var(--seq5)'];
+ days.forEach((d,r)=>{el('text',{x:cl-6,y:ct+r*ch+ch/2+4,'text-anchor':'end','font-size':10,fill:'#6E665E'},s).textContent=d;
+  hrs.forEach((h,c)=>{let lv=base[c]+(r>=5?(c>=2&&c<=7?1:-1):0)-(r>=5&&c<2?2:0);lv=Math.max(1,Math.min(5,lv));
+   const rc=el('rect',{x:cl+c*cw+1,y:ct+r*ch+1,width:cw-2,height:ch-2,rx:3,fill:cols[lv-1]},s);tip(rc,`${d} ${h}:00 – level ${lv} of 5`)})});
+ hrs.forEach((h,c)=>{if(c%2===0)el('text',{x:cl+c*cw+cw/2,y:H-6,'text-anchor':'middle','font-size':10,fill:'#6E665E'},s).textContent=h+':00'});
+ const lg=document.createElement('div');lg.style.cssText='display:flex;gap:6px;align-items:center;font-size:11px;color:#6E665E;margin-top:4px';
+ lg.innerHTML='Fewer'+cols.map(c=>`<span style="width:18px;height:10px;border-radius:2px;background:${c};display:inline-block"></span>`).join('')+'More · busiest: weekdays 08:00–09:00';$('#heat').appendChild(lg);
+})();
+
+// horizontal bars helper (single colour; identity from axis labels)
+function hbars(target,rows,fmt,max){const W=330,rh=26,H=rows.length*rh+4,lw=118;const s=el('svg',{width:'100%',viewBox:`0 0 ${W} ${H}`,role:'img'},$(target));
+ rows.forEach(([n,v],i)=>{const y=i*rh+4,w=(W-lw-44)*v/max;el('text',{x:lw-8,y:y+14,'text-anchor':'end','font-size':11,fill:'#1E1B18'},s).textContent=n;
+  const b=el('rect',{x:lw,y:y+3,width:Math.max(w,2),height:rh-10,rx:4,fill:'var(--s1)'},s);tip(b,`${n}: ${fmt(v)}`);
+  el('text',{x:lw+w+6,y:y+14,'font-size':11,fill:'#52514e'},s).textContent=fmt(v)})}
+hbars('#prod',[['Oat flat white',1840],['Cappuccino',1510],['Latte',1325],['Korvapuusti',1190],['Filter coffee',980],['Salmon sandwich',610]],v=>v.toLocaleString('en'),1840);
+hbars('#seg',[['Regular',1120],['Occasional',1460],['New',412],['At risk',236],['Lapsed',254]],v=>v.toLocaleString('en'),1460);
+
+// cohort table (sequential shading)
+(function(){const rows=[['Jul',100,62,48,41],['Aug',100,64,51,null],['Sep',100,67,null,null],['Oct',100,null,null,null]];
+ const shade=v=>v==null?'#fff':v>=90?'var(--seq5)':v>=60?'var(--seq4)':v>=50?'var(--seq3)':v>=40?'var(--seq2)':'var(--seq1)';
+ $('#coh').innerHTML='<table><thead><tr><th>Joined</th><th>M0</th><th>M1</th><th>M2</th><th>M3</th></tr></thead><tbody>'+rows.map(r=>'<tr><td><b>'+r[0]+'</b></td>'+r.slice(1).map(v=>`<td style="text-align:center;background:${shade(v)};color:${v!=null&&v>=60?'#fff':'#1E1B18'};font-weight:600" title="${v==null?'not yet':v+'%'}">${v==null?'':v+'%'}</td>`).join('')+'</tr>').join('')+'</tbody></table><div class="tag" style="margin-top:6px">e.g. 62% of July sign-ups visited again in August</div>';
+})();
+</script>
+</body>
+</html>
